@@ -10,8 +10,27 @@ srun -p amd-tw-verification -N 1 -G 8 -t 08:00:00 --pty bash
 ./interactive_vllm.sh
 ```
 
-## Run vf-eval
+## Setup prime and run vf-eval
 
 ```sh
-uv run vf-eval -m /shared_silo/scratch/models/DeepSeek-V3 --api-base-url http://localhost:8000/v1
+# install uv if not installed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# install prime if not installed
+uv tool install prime
+
+# init venv
+uv venv --python 3.12
+source .venv/bin/activate
+
+# install env package locally in editable mode
+prime env pull kalomaze/alphabet-sort
+cd alphabet-sort
+uv pip install -e .
+
+# run package
+export OPENAI_API_KEY="dummy"
+uv run vf-eval alphabet-sort \
+  -m /shared_silo/scratch/models/DeepSeek-V3 \
+  --api-base-url http://localhost:8000/v1
 ```
